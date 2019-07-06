@@ -69,13 +69,13 @@ const nif = new Niffler({
         tag: 'title',
       },
       {
-        mode: Niffler.HasNoAttrWithValue,
+        mode: Niffler.HasNoAttrWithValue, // Get the number of meta tags that has no attribute of "name='description'"
         tag: 'meta',
         attribute: 'name',
         value: 'description',
       }
       {
-        mode: Niffler.HasNoAttrWithValue,
+        mode: Niffler.HasNoAttrWithValue, // Get the number of meta tags that has no attribute of "name='keywords'"
         tag: 'meta',
         attribute: 'name',
         value: 'keywords',
@@ -85,6 +85,8 @@ const nif = new Niffler({
 })
 ```
 
+> The mode 'HasNoAttrWithValue' also considers the case when specified attribute does not present in the given tag.
+
 ## Check the number of tag existence within constraint.
 
 ```js
@@ -92,12 +94,12 @@ const nif = new Niffler({
   input: ...
   rules: [
     {
-      mode: Niffler.TagExistenceGreaterThan,
+      mode: Niffler.TagNumberGreaterThan,
       limit: 15,
       tag: 'strong'
     },
     {
-      mode: Niffler.TagExistenceGreaterThan,
+      mode: Niffler.TagNumberGreaterThan,
       limit: 15,
       tag: 'h1'
     },
