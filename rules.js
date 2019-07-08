@@ -74,6 +74,8 @@ function detectHasNoAttrWithValue(context, config, output) {
 /**
  * Determine the number of appearences of a given tag is greater than
  * the specified limit.
+ *
+ * @todo Proper tone on singular or plural.
  */
 function detectTagNumberGreaterThan(context, config, output) {
   const { tag, limit } = config
@@ -90,11 +92,11 @@ function detectTagNumberGreaterThan(context, config, output) {
   const matchSum = scmatches.length + cmatches.length
 
   if (matchSum > limit) {
-    return `The html has more than ${limit} <${tag}> tags.`
+    return `The html has more than ${limit} <${tag}> tags`
   } else if (matchSum === limit) {
-    return `The html has exactly ${limit} <${tag}> tags.`
+    return `The html has exactly ${limit} <${tag}> tags`
   } else {
-    return `The number of <${tag}> tags is less than the ${limit} in the html.`
+    return `The number of <${tag}> tags in the html is less than the limit ${limit}`
   }
 }
 

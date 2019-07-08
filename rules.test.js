@@ -108,7 +108,7 @@ describe('Find matching pattern that a given tag does not contain specific attri
 })
 
 describe('Detect the number of tag appearances', () => {
-  test.only('get correct number of matching pattern', () => {
+  test('html has more than 1 <h1> tags', () => {
     const context = removeLineBreaks(`
       <html>
         <h1 />
@@ -124,6 +124,60 @@ describe('Detect the number of tag appearances', () => {
 
     const result = detectTagNumberGreaterThan(context, config)
 
-    console.log('result', result)
+    expect(result).toBe('The html has more than 1 <h1> tags')
+  })
+
+  test('html has exactly 1 <h1> tag', () => {
+    const context = removeLineBreaks(`
+      <html>
+        <div>
+          <h1> hello shoppers </h1>
+        </div>
+        <div>
+          shopback
+        </div>
+      </html>
+    `)
+
+    const config = { tag: 'h1', limit: 1 }
+
+    const result = detectTagNumberGreaterThan(context, config)
+
+    expect(result).toBe('The html has exactly 1 <h1> tags')
+  })
+
+  test('html has exactly 1 <h1> tag with self closing', () => {
+    const context = removeLineBreaks(`
+      <html>
+        <div>
+          <h1 />
+        </div>
+        <div>
+          shopback
+        </div>
+      </html>
+    `)
+
+    const config = { tag: 'h1', limit: 1 }
+
+    const result = detectTagNumberGreaterThan(context, config)
+
+    expect(result).toBe('The html has exactly 1 <h1> tags')
+  })
+
+  test('html has no <h1> tag', () => {
+    const context = removeLineBreaks(`
+      <html>
+        <div>
+          shopback
+        </div>
+      </html>
+    `)
+
+    const config = { tag: 'h1', limit: 1 }
+
+    const result = detectTagNumberGreaterThan(context, config)
+
+    expect(result).toBe('The number of <h1> tags in the html is less than the limit 1')
   })
 })
