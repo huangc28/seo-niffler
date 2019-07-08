@@ -21,6 +21,22 @@ const nif = new Niffler({
   input: fs.createReadStream('/path/to/html')
 })
 ```
+# Output destination
+
+```js
+const nif = new Niffler({
+  input: ...,
+  output: '/path/to/dest'
+})
+
+// Or
+
+const nif = new Niffler({
+  input: ...,
+  output: fs.createWriteStream('/path/to/dest'),
+})
+```
+
 ## Define niffler rules
 
 ```js
@@ -34,6 +50,8 @@ const nif = new Niffler({
     attribute: 'alt',
   },
 })
+
+nif.detect()
 
 // Or, you can specify multiple rules by providing array of rule objects.
 const nif = new Niffler({
@@ -51,6 +69,8 @@ const nif = new Niffler({
     }
   ]
 })
+
+nif.detect()
 ```
 
 ## Apply rules only within constraint tag region
@@ -83,6 +103,8 @@ const nif = new Niffler({
     ]
   }
 })
+
+nif.detect()
 ```
 
 > The mode 'HasNoAttrWithValue' also considers the case when specified attribute does not present in the given tag.
@@ -100,9 +122,11 @@ const nif = new Niffler({
     },
     {
       mode: Niffler.TagNumberGreaterThan,
-      limit: 15,
+      limit: 1,
       tag: 'h1'
     },
   ]
 })
+
+nif.detect()
 ```
