@@ -100,7 +100,7 @@ function detectTagNumberGreaterThan(context, config, output) {
   }
 }
 
-const rulesDetectMap = {
+const predefinedRules = {
   [rules.TagExists]: detectTagExists,
   [rules.HasNoAttrWithValue]: detectHasNoAttrWithValue,
   [rules.TagNumberGreaterThan]: detectTagNumberGreaterThan,
@@ -108,8 +108,11 @@ const rulesDetectMap = {
 
 module.exports = {
   rules,
-  rulesDetectMap,
+  predefinedRules,
+
+  detectTagExists,
   detectHasNoAttrWithValue,
   detectTagNumberGreaterThan,
+  
   removeLineBreaks,
 }

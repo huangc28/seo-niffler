@@ -1,10 +1,10 @@
 const {
   rules,
-  rulesDetectMap,
+  detectTagExists,
   detectHasNoAttrWithValue,
   detectTagNumberGreaterThan,
   removeLineBreaks,
-} = require('./rules')
+} = require('../rules')
 
 test('Replace all line breaks within a context', () => {
   const context = `
@@ -21,8 +21,6 @@ test('Replace all line breaks within a context', () => {
 })
 
 describe('Detect tag exists rules', () => {
-  const detectTagExists = rulesDetectMap[rules.TagExists]
-
   test('Assert that title tag presents in html', () => {
     // Create a region of html script
     const context = removeLineBreaks(`
