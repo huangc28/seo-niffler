@@ -1,5 +1,6 @@
 {
   "name": "seo-niffler",
+  "author": "Bryan Huang <huangchiheng@gmail.com>",
   "version": "0.0.1",
   "description": "Seo defect sniffler tool. Compose your own rule and start sniffling ",
   "main": "niffler.js",
@@ -10,7 +11,6 @@
     "type": "git",
     "url": "git+https://github.com/huangc28/seo-niffler.git"
   },
-  "author": "Bryan Huang <huangchiheng@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/huangc28/seo-niffler/issues"
