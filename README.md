@@ -80,28 +80,30 @@ You can also apply rules within a specified tag region instead of applying rules
 ```js
 const nif = new Niffler({
   input: ...,
-  rules: {
-    mode: Niffler.Constraint, // Constrains the following rules within the provided context. In this case is <head> ... </head>.
-    tag: 'head',
-    rules: [
-      {
-        mode: Niffler.TagExists, // Check if <title> </title> exists at least once.
-        tag: 'title',
-      },
-      {
-        mode: Niffler.HasNoAttrWithValue, // Get the number of meta tags that has no attribute of "name='description'"
-        tag: 'meta',
-        attribute: 'name',
-        value: 'description',
-      }
-      {
-        mode: Niffler.HasNoAttrWithValue, // Get the number of meta tags that has no attribute of "name='keywords'"
-        tag: 'meta',
-        attribute: 'name',
-        value: 'keywords',
-      }
-    ]
-  }
+  rules: [
+    {
+      mode: Niffler.Constraint, // Constrains the following rules within the provided context. In this case is <head> ... </head>.
+      tag: 'head',
+      rules: [
+        {
+          mode: Niffler.TagExists, // Check if <title> </title> exists at least once.
+          tag: 'title',
+        },
+        {
+          mode: Niffler.HasNoAttrWithValue, // Get the number of meta tags that has no attribute of "name='description'"
+          tag: 'meta',
+          attribute: 'name',
+          value: 'description',
+        }
+        {
+          mode: Niffler.HasNoAttrWithValue, // Get the number of meta tags that has no attribute of "name='keywords'"
+          tag: 'meta',
+          attribute: 'name',
+          value: 'keywords',
+        }
+      ]
+    }
+  ]
 })
 
 nif.detect()
@@ -113,19 +115,20 @@ nif.detect()
 
 ```js
 const nif = new Niffler({
-  input: ...
+  input: ...,
+  output: ...,
   rules: [
     {
       mode: Niffler.TagNumberGreaterThan,
       limit: 15,
-      tag: 'strong'
+      tag: 'strong',
     },
     {
       mode: Niffler.TagNumberGreaterThan,
       limit: 1,
-      tag: 'h1'
+      tag: 'h1',
     },
-  ]
+  ],
 })
 
 nif.detect()

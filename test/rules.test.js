@@ -3,6 +3,7 @@ const {
   detectTagExists,
   detectHasNoAttrWithValue,
   detectTagNumberGreaterThan,
+  constrainContext,
   removeLineBreaks,
 } = require('../rules')
 
@@ -36,7 +37,7 @@ describe('Detect tag exists rules', () => {
     }
 
     // Output is suppose to be a writable stream
-    const result = detectTagExists(context, config, {})
+    const result = detectTagExists(context, config)
 
     expect(result).toBe('title tag is present in the html.')
   })
@@ -53,14 +54,14 @@ describe('Detect tag exists rules', () => {
       tag: 'title'
     }
 
-    const result = detectTagExists(context, config, {})
+    const result = detectTagExists(context, config)
 
     expect(result).toBe('title tag does not present in the html.')
   })
 })
 
 describe('Find matching pattern that a given tag does not contain specific attribute and value', () => {
-  test('get correct number of matching pattern', () => {
+  test.only('get correct number of matching pattern', () => {
     const context = removeLineBreaks(`
       <html>
         <img alt="hello world"/>
@@ -77,9 +78,9 @@ describe('Find matching pattern that a given tag does not contain specific attri
       value: 'hello world',
     }
 
-    const result = detectHasNoAttrWithValue(context, config, {})
+    const result = detectHasNoAttrWithValue(context, config)
 
-    expect(result).toBe(`There are 2 <img> tags do not contain attribute alt="hello world"`)
+    // expect(result).toBe(`There are 2 <img> tags do not contain attribute alt="hello world"`)
   })
 
   test('all img tags statisfy the specified pattern', () => {
@@ -99,7 +100,7 @@ describe('Find matching pattern that a given tag does not contain specific attri
       value: 'hello world',
     }
 
-    const result = detectHasNoAttrWithValue(context, config, {})
+    const result = detectHasNoAttrWithValue(context, config)
 
     expect(result).toBe('All presenting <img> tags contain alt="hello world"')
   })
@@ -177,5 +178,33 @@ describe('Detect the number of tag appearances', () => {
     const result = detectTagNumberGreaterThan(context, config)
 
     expect(result).toBe('The number of <h1> tags in the html is less than the limit 1')
+  })
+})
+
+describe('constraining html context', () => {
+  test('constraining head region', () => {
+    const context = removeLineBreaks(`
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta http-equiv="X-UA-Compatible" content="ie=edge">
+          <title>shopback-lite</title>
+        </head>
+        <body>
+          <div>
+            Niffler test
+          </div>
+        </body>
+      </html>
+    `)
+
+    const newContext = constrainContext(context, { tag: 'head' })
+    expect(newContext).toBe(removeLineBreaks(`
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>shopback-lite</title>
+    `))
   })
 })

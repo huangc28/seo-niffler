@@ -3,7 +3,11 @@
 const fs = require('fs')
 const stream = require('stream')
 
-const { removeLineBreaks } = require('./rules')
+const {
+  removeLineBreaks,
+  predefinedRules,
+  rules,
+} = require('./rules')
 
 class Niffler {
   constructor(config) {
@@ -25,6 +29,8 @@ class Niffler {
     // We need to register modes to be able to perform
     // proper sniffling logic for each rule.
     this.result = []
+
+    // @todo We should make a method to define new rules.
     this.rules = config.rules || []
   }
 
@@ -93,12 +99,28 @@ class Niffler {
     })
   }
 
-  detect () {
-    // Read html context from stream readable
-    const htmlContext = this.read()
+  async detect () {
+    // If html context is not set externally, reads the the html context
+    // from input source. If html context is set, its typically being
+    // set by 'constraint' rule.
+    const context = await this.read()
 
     // Apply html context alone with config to each mode to perform checking logic.
+    // Iterate through rules.
+    // console.log('this.rules', this.rules)
+    for (let rule of this.rules) {
+      if (rule.mode === 'ConstrainContext') {
+        // Initialize niffler. Set the new context for this new niffler.
+      } else {
+        this.result.push(predefinedRules[rule.mode](context, rule))
+      }
+    }
+
+    console.log('this.result', this.result)
+
+    // Now that we have list of result.
   }
 }
 
-module = module.exports = Niffler
+module.exports = Niffler
+Object.assign(Niffler, rules)

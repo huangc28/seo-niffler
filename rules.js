@@ -2,6 +2,7 @@ const rules = {
   TagExists: 'TagExists',
   HasNoAttrWithValue: 'HasNoAttrWithValue',
   TagNumberGreaterThan: 'TagNumberGreaterThan',
+  ConstrainContext: 'ConstrainContext',
 }
 
 /**
@@ -43,7 +44,7 @@ const getRegExpOfUmatchedTagsWithAttrAndValue = ({ tag, attribute, value }) => `
  * Match specific tag for at least once. Therefore, we can use a boolean
  * to indicate whether a given tag exists in the html context.
  */
-function detectTagExists(context, config, output) {
+function detectTagExists(context, config) {
   // Extract tag by regular expression
   const { tag } = config
   const reg = getRegExpOfMatchedTags(tag)
@@ -59,16 +60,16 @@ function detectTagExists(context, config, output) {
 /**
  * Get the number of specified tags that do not contain attribute and value.
  */
-function detectHasNoAttrWithValue(context, config, output) {
+function detectHasNoAttrWithValue(context = '', config) {
   const { tag, attribute, value } = config
   const reg = getRegExpOfUmatchedTagsWithAttrAndValue({ tag, attribute, value })
-  const matches = context.match(new RegExp(reg, 'g'))
+  const matches = context.match(new RegExp(reg, 'g')) || []
 
-  if (Array.isArray(matches) && matches.length > 0) {
+  if (matches.length > 0) {
     return `There are ${matches.length} <${tag}> tags do not contain attribute ${attribute}="${value}"`
   }
 
-  return `All presenting <${tag}> tags contain ${attribute}="${value}"`
+  return `There are no <${tag}> tags do not contain ${attribute}="${value}"`
 }
 
 /**
@@ -77,7 +78,7 @@ function detectHasNoAttrWithValue(context, config, output) {
  *
  * @todo Proper tone on singular or plural.
  */
-function detectTagNumberGreaterThan(context, config, output) {
+function detectTagNumberGreaterThan(context = '', config) {
   const { tag, limit } = config
   // Compose a regular expression to find the number of matched tags
 
@@ -100,10 +101,26 @@ function detectTagNumberGreaterThan(context, config, output) {
   }
 }
 
+/**
+ * Constraining the html context and continue calling niffler detect recursively
+ *
+ *   1. Extract the content in between specified tag
+ *   2. Initialize a new of Niffler
+ *   3. Set the html context of the Niffler
+ *   4. Perform detect().
+ */
+function constrainContext (context, config) {
+  const { tag } = config
+  const re = `<${tag}>(.*?)<\\/${tag}>`
+  const [,newContext = []] = context.match(new RegExp(re))
+  return newContext
+}
+
 const predefinedRules = {
   [rules.TagExists]: detectTagExists,
   [rules.HasNoAttrWithValue]: detectHasNoAttrWithValue,
   [rules.TagNumberGreaterThan]: detectTagNumberGreaterThan,
+  [rules.ConstrainContext]: constrainContext,
 }
 
 module.exports = {
@@ -113,6 +130,7 @@ module.exports = {
   detectTagExists,
   detectHasNoAttrWithValue,
   detectTagNumberGreaterThan,
-  
+  constrainContext,
+
   removeLineBreaks,
 }
