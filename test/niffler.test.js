@@ -1,4 +1,5 @@
 const path = require('path')
+const fs = require('fs')
 
 const Niffler = require('../niffler')
 
@@ -13,7 +14,7 @@ describe('niffler functionalities', () => {
     expect(content.length).toBeGreaterThan(1)
   })
 
-  test.only('output the result to output', async () => {
+  test('output the result to output', async () => {
     const niffler = new Niffler({
       input: path.resolve(__dirname, './files/index.html'),
       output: path.resolve(__dirname, './files/output.txt'),
@@ -28,5 +29,6 @@ describe('niffler functionalities', () => {
     })
 
     await niffler.detect()
+    fs.unlinkSync(path.resolve(__dirname, './files/output.txt'))
   })
 })
