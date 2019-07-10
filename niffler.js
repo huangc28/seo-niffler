@@ -53,9 +53,7 @@ class Niffler {
 
   initOutput(output) {
     if (typeof output === 'string') {
-      if (fs.existsSync(output)) {
-        this.output = fs.createWriteStream(output)
-      }
+      this.output = fs.createWriteStream(output)
     } else {
       // Input is neither stream readable nor string path. Echo error
       if (!(output instanceof stream.Writable) && !(output instanceof Console)) {
@@ -78,9 +76,9 @@ class Niffler {
     let context = ''
     let reader = this.input
     return new Promise((resolve, reject) => {
-      this.input.on('data', onData)
-      this.input.on('end', onEnd)
-      this.input.on('error', onError)
+      reader.on('data', onData)
+      reader.on('end', onEnd)
+      reader.on('error', onError)
 
       function onData(chunk) {
         context += chunk.toString('utf8')
@@ -109,10 +107,36 @@ class Niffler {
     // There are three possible output dest.
     //   1. File path
     //   2. Writable stream
-    //   3. console
+    //   3. Node console
     // We should first determine whether the output source is console or not
     // join the array of result to a single string
+    // console.log('trigger!!')
     const message = results.join('\\n')
+    const writer = this.output
+
+    return new Promise((resolve, reject) => {
+      // if this.output is an instanceof Console specified by the user. simply log it
+      if (writer instanceof Console) {
+        writer.log(message)
+        resolve(message)
+      } else {
+        writer.write(message, 'utf8')
+        writer.end()
+
+        writer.on('finish', onFinish)
+        writer.on('error', onError)
+
+        function onFinish() {
+          writer.removeListener('finish', onFinish)
+          resolve(message)
+        }
+
+        function onError(err) {
+          writer.removeListener('error', onError)
+          reject(err)
+        }
+      }
+    })
   }
 
   async detect () {
@@ -132,7 +156,7 @@ class Niffler {
     }
 
     // Now that we have list of results.
-    this.write(this.result)
+    await this.write(this.result)
   }
 }
 
