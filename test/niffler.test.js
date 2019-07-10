@@ -14,9 +14,6 @@ describe('niffler functionalities', () => {
   })
 
   test.only('output the result to output', async () => {
-    // console.log('triggered', Niffler.TagExists)
-    // console.log('Niffler', Niffler)
-
     const niffler = new Niffler({
       input: path.resolve(__dirname, './files/index.html'),
       output: path.resolve(__dirname, './files/output.txt'),

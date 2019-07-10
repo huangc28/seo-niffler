@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const stream = require('stream')
+const { Console } = require('console')
 
 const {
   removeLineBreaks,
@@ -52,14 +53,18 @@ class Niffler {
 
   initOutput(output) {
     if (typeof output === 'string') {
-      // We should check whether a given input is a valid path
       if (fs.existsSync(output)) {
         this.output = fs.createWriteStream(output)
       }
     } else {
       // Input is neither stream readable nor string path. Echo error
-      if (!(output instanceof stream.Writable)) {
-        throw new Error('Invalid output source. Output is neither string path nor stream writable.')
+      if (!(output instanceof stream.Writable) && !(output instanceof Console)) {
+        throw new Error(
+          'Invalid output source. Output should be one of the following: ' +
+          '  - Valid file path' +
+          '  - Writable stream' +
+          '  - Console class'
+        )
       }
 
       this.output = output
@@ -99,6 +104,17 @@ class Niffler {
     })
   }
 
+  write(results) {
+    // writes the result to output dest.
+    // There are three possible output dest.
+    //   1. File path
+    //   2. Writable stream
+    //   3. console
+    // We should first determine whether the output source is console or not
+    // join the array of result to a single string
+    const message = results.join('\\n')
+  }
+
   async detect () {
     // If html context is not set externally, reads the the html context
     // from input source. If html context is set, its typically being
@@ -107,7 +123,6 @@ class Niffler {
 
     // Apply html context alone with config to each mode to perform checking logic.
     // Iterate through rules.
-    // console.log('this.rules', this.rules)
     for (let rule of this.rules) {
       if (rule.mode === 'ConstrainContext') {
         // Initialize niffler. Set the new context for this new niffler.
@@ -116,11 +131,11 @@ class Niffler {
       }
     }
 
-    console.log('this.result', this.result)
-
-    // Now that we have list of result.
+    // Now that we have list of results.
+    this.write(this.result)
   }
 }
 
 module.exports = Niffler
 Object.assign(Niffler, rules)
+// Todo, make Niffler inconfigurable.

@@ -1,3 +1,5 @@
+'use strict'
+
 const rules = {
   TagExists: 'TagExists',
   HasNoAttrWithValue: 'HasNoAttrWithValue',
@@ -109,7 +111,7 @@ function detectTagNumberGreaterThan(context = '', config) {
  *   3. Set the html context of the Niffler
  *   4. Perform detect().
  */
-function constrainContext (context, config) {
+function constrainContext (context = '', config) {
   const { tag } = config
   const re = `<${tag}>(.*?)<\\/${tag}>`
   const [,newContext = []] = context.match(new RegExp(re))
