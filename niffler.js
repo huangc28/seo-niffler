@@ -103,14 +103,8 @@ class Niffler {
   }
 
   write(results) {
-    // writes the result to output dest.
-    // There are three possible output dest.
-    //   1. File path
-    //   2. Writable stream
-    //   3. Node console
-    // We should first determine whether the output source is console or not
-    // join the array of result to a single string
-    // console.log('trigger!!')
+    // We should first determine whether the output source is console class
+    // or not. join the array of result to a single string
     const message = results.join('\\n')
     const writer = this.output
 
