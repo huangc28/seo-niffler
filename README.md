@@ -133,3 +133,7 @@ const nif = new Niffler({
 
 nif.detect()
 ```
+
+## TODO
+
+- There should be a rule validator. If argument provided is not defined, simply throws an error.
