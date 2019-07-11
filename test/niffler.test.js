@@ -35,7 +35,8 @@ describe('SEO niffler', () => {
       ],
     })
 
-    await niffler.detect()
+    const message = await niffler.detect()
+    expect(message).toBe('There are 2 <img> tags do not contain attribute alt="hello world"')
   })
 
   test('output the result to output', async () => {

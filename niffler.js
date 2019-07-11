@@ -175,7 +175,7 @@ class Niffler {
     }
 
     // Now that we have list of results.
-    await this.write(this.result)
+    return await this.write(this.result)
   }
 }
 
