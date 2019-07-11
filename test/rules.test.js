@@ -61,7 +61,7 @@ describe('Detect tag exists rules', () => {
 })
 
 describe('detectHasNoAttr', () => {
-  test.only('get correct number of matching pattern', () => {
+  test('get correct number of matching pattern', () => {
     const context = removeLineBreaks(`
       <html>
         <img alt="hello world"/>
@@ -102,7 +102,7 @@ describe('detectHasNoAttrWithValue', () => {
 
     const result = detectHasNoAttrWithValue(context, config)
 
-    // expect(result).toBe(`There are 2 <img> tags do not contain attribute alt="hello world"`)
+    expect(result).toBe(`There are 2 <img> tags do not contain attribute alt="hello world"`)
   })
 
   test('all img tags statisfy the specified pattern', () => {
@@ -124,7 +124,7 @@ describe('detectHasNoAttrWithValue', () => {
 
     const result = detectHasNoAttrWithValue(context, config)
 
-    expect(result).toBe('All presenting <img> tags contain alt="hello world"')
+    expect(result).toBe('All existing <img> tags contain alt="hello world"')
   })
 })
 

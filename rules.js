@@ -95,7 +95,7 @@ function detectHasNoAttrWithValue(context = '', config) {
     return `There are ${matches.length} <${tag}> tags do not contain attribute ${attribute}="${value}"`
   }
 
-  return `All existing <${tags}> contain ${attribute}="${value}"`
+  return `All existing <${tag}> tags contain ${attribute}="${value}"`
 }
 
 /**
