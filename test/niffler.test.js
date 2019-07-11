@@ -59,8 +59,8 @@ describe('SEO niffler', () => {
     // Read file content from output dest
     const output = fs.readFileSync(path.resolve(__dirname, './files/output.txt'), { encoding: 'utf8' })
     expect(output).toBe(
-      'There are 1 <img> tags do not contain attribute alt="helloworld"\r\n' +
-      'All existing <img> contain alt.'
+      'There are 3 <img> tags do not contain attribute alt="helloworld"\r\n' +
+      'There are 1 <img> tags do not contain attribute alt'
     )
 
     fs.unlinkSync(path.resolve(__dirname, './files/output.txt'))
