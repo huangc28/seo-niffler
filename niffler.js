@@ -142,10 +142,19 @@ class Niffler {
     // Apply html context alone with config to each mode to perform checking logic.
     // Iterate through rules.
     for (let rule of this.rules) {
-      if (rule.mode === 'ConstrainContext') {
+      if (rule.mode === rules.ConstrainContext) {
         // Initialize niffler. Set the new context for this new niffler.
+        const niffler = new Niffler({
+          input: this.input,
+          output: this.output,
+          rules,
+        })
+
+        niffler.detect()
       } else {
-        this.result.push(predefinedRules[rule.mode](context, rule))
+        if (predefinedRules[rule.mode]) {
+          this.result.push(predefinedRules[rule.mode](context, rule))
+        }
       }
     }
 
@@ -156,4 +165,4 @@ class Niffler {
 
 module.exports = Niffler
 Object.assign(Niffler, rules)
-// Todo, make Niffler inconfigurable.
+Object.freeze(Niffler)

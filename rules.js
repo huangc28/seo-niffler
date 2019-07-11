@@ -2,6 +2,7 @@
 
 const rules = {
   TagExists: 'TagExists',
+  HasNoAttr: 'HasNoAttr',
   HasNoAttrWithValue: 'HasNoAttrWithValue',
   TagNumberGreaterThan: 'TagNumberGreaterThan',
   ConstrainContext: 'ConstrainContext',
@@ -38,9 +39,20 @@ const getRegExpOfMatchedTags = tag => `<${tag}\\b[^>\/]*>(?:.*?)<\\/${tag}>`
 const getRegExpOfMatchedTagsSelfClosing = tag => `<${tag}[^>]+?\\/>`
 
 /**
- * @todo We should figure out how this regex patterns works...
+ * Negtive look ahead on tag and attribute=value. In which case, given div(tag) class='yello':
+ *   - <div class='yello' /> does not satisfy
+ *   - <div /> satisfies
+ *   - <div class="red" /> satisfies
  */
 const getRegExpOfUmatchedTagsWithAttrAndValue = ({ tag, attribute, value }) => `<${tag}(?=\\s|>)(?!(?:[^>=]|=(['"])(?:(?!\\1).)*\\1)*?\\s*?${attribute}\\s*?=\\s*?['"]${value}['"])[^>]*\\/?>`
+
+/**
+ * Negtive look ahead on tag and attribute. In which case, given tag: div, attribute:class
+ *   - <div class='yello' /> satisfies
+ *   - <div /> not satisfy
+ *   - <div class="red" /> satisfies
+ */
+const getRegExpOfUmatchedTagsWithAttr = ({ tag, attribute }) => `<${tag}(?=\\s|>)(?!(?:[^>=]|=(['"])(?:(?!\\1).)*\\1)*?\\s*?${attribute}\s*?=\\s*?['"](?:.*?)['"])[^>]*\\/?>`
 
 /**
  * Match specific tag for at least once. Therefore, we can use a boolean
@@ -59,6 +71,18 @@ function detectTagExists(context, config) {
   return `${config.tag} tag does not present in the html.`
 }
 
+function detectHasNoAttr(context, config) {
+  const { tag, attribute } = config
+  const reg = getRegExpOfUmatchedTagsWithAttr({ tag, attribute })
+  const matches = context.match(new RegExp(reg, 'g')) || []
+
+  if (matches.length > 0) {
+    return `There are ${matches.length} <${tag}> tags do not contain attribute ${attribute}`
+  }
+
+  return `All existing <${tag}> contain ${attribute}.`
+}
+
 /**
  * Get the number of specified tags that do not contain attribute and value.
  */
@@ -71,7 +95,7 @@ function detectHasNoAttrWithValue(context = '', config) {
     return `There are ${matches.length} <${tag}> tags do not contain attribute ${attribute}="${value}"`
   }
 
-  return `There are no <${tag}> tags do not contain ${attribute}="${value}"`
+  return `All existing <${tags}> contain ${attribute}="${value}"`
 }
 
 /**
@@ -120,6 +144,7 @@ function constrainContext (context = '', config) {
 
 const predefinedRules = {
   [rules.TagExists]: detectTagExists,
+  [rules.HasNoAttr]: detectHasNoAttr,
   [rules.HasNoAttrWithValue]: detectHasNoAttrWithValue,
   [rules.TagNumberGreaterThan]: detectTagNumberGreaterThan,
   [rules.ConstrainContext]: constrainContext,
@@ -130,6 +155,7 @@ module.exports = {
   predefinedRules,
 
   detectTagExists,
+  detectHasNoAttr,
   detectHasNoAttrWithValue,
   detectTagNumberGreaterThan,
   constrainContext,

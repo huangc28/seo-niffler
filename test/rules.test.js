@@ -1,5 +1,5 @@
 const {
-  rules,
+ detectHasNoAttr,
   detectTagExists,
   detectHasNoAttrWithValue,
   detectTagNumberGreaterThan,
@@ -60,8 +60,30 @@ describe('Detect tag exists rules', () => {
   })
 })
 
-describe('Find matching pattern that a given tag does not contain specific attribute and value', () => {
+describe('detectHasNoAttr', () => {
   test.only('get correct number of matching pattern', () => {
+    const context = removeLineBreaks(`
+      <html>
+        <img alt="hello world"/>
+        <img alt='hello world'/>
+        <img src="nihao"/>
+        <img name='bryan' />
+        <img alt='hello world' src='nihao'/>
+        <img />
+      </html>
+    `)
+
+    const result = detectHasNoAttr(context, {
+      tag: 'img',
+      attribute: 'alt',
+    })
+
+    expect(result).toBe('There are 3 <img> tags do not contain attribute alt')
+  })
+})
+
+describe('detectHasNoAttrWithValue', () => {
+  test('get correct number of matching pattern', () => {
     const context = removeLineBreaks(`
       <html>
         <img alt="hello world"/>
