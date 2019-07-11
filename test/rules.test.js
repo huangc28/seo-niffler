@@ -1,5 +1,5 @@
 const {
- detectHasNoAttr,
+  detectHasNoAttr,
   detectTagExists,
   detectHasNoAttrWithValue,
   detectTagNumberGreaterThan,
@@ -21,7 +21,7 @@ test('Replace all line breaks within a context', () => {
 
 })
 
-describe('Detect tag exists rules', () => {
+describe('detectTagExists', () => {
   test('Assert that title tag presents in html', () => {
     // Create a region of html script
     const context = removeLineBreaks(`
@@ -55,8 +55,18 @@ describe('Detect tag exists rules', () => {
     }
 
     const result = detectTagExists(context, config)
-
     expect(result).toBe('title tag does not present in the html.')
+  })
+
+  test('detect meta tag without enclosed backslash', () => {
+    const context = removeLineBreaks(`<meta charset="UTF-8"></meta><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>shopback-lite</title>`)
+
+    const config = {
+      tag: 'meta'
+    }
+
+    const result = detectTagExists(context, config)
+    expect(result).toBe('meta tag is present in the html.')
   })
 })
 

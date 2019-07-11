@@ -4,7 +4,7 @@ const fs = require('fs')
 const Niffler = require('../niffler')
 
 
-describe('niffler functionalities', () => {
+describe('SEO niffler', () => {
   const createNiffler = rules => {
     return new Niffler({
       input: path.resolve(__dirname, './files/index.html'),
@@ -27,13 +27,58 @@ describe('niffler functionalities', () => {
         attribute: 'alt',
         value: 'helloworld',
       },
+      {
+        mode: Niffler.HasNoAttr, // Detect the number of img tags without specifying "alt" attribute
+        tag: 'img',
+        attribute: 'alt',
+      }
     ])
 
     await niffler.detect()
+
+    // Read file content from output dest
+    const output = fs.readFileSync(path.resolve(__dirname, './files/output.txt'), { encoding: 'utf8' })
+    expect(output).toBe(
+      'There are 1 <img> tags do not contain attribute alt="helloworld"\r\n' +
+      'All existing <img> contain alt.'
+    )
+
     fs.unlinkSync(path.resolve(__dirname, './files/output.txt'))
   })
 
-  test('constraining html, perform checking logic against the constraint', () => {
+  test('constraining html, perform checking logic against the constraint', async () => {
+    const niffler = createNiffler([
+      {
+        mode: Niffler.ConstrainContext,
+        tag: 'head',
+        rules: [
+          {
+            mode: Niffler.ConstrainContext,
+            tag: 'div',
+            rules: [
+              {
+                mode: Niffler.TagExists,
+                tag: 'img',
+              },
+              {
+                mode: Niffler.HasNoAttrWithValue,
+                tag: 'img',
+                attribute: 'alt',
+                value: 'hello world',
+              }
+            ]
+          }
+        ]
+      }
+    ])
 
+    await niffler.detect()
+    const output = fs.readFileSync(path.resolve(__dirname, './files/output.txt'), { encoding: 'utf8' })
+    expect(output).toBe(
+      'img tag is present in the html.\r\n' +
+      'There are 1 <img> tags do not contain attribute alt="hello world"'
+    )
+
+    fs.unlinkSync(path.resolve(__dirname, './files/output.txt'))
   })
 })

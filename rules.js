@@ -26,7 +26,7 @@ const removeLineBreaks = text => text.replace(/^\s+/gm, '').replace(/\r?\n|\r/g,
   *   - <h1></h1>
   *   - <title></title>
   */
-const getRegExpOfMatchedTags = tag => `<${tag}\\b[^>\/]*>(?:.*?)<\\/${tag}>`
+const getRegExpOfMatchedTags = tag => `<${tag}\\b[^>\/]*\\/?>(?:.*?)(?:<\\/${tag}>)?`
 
 /**
  * Matching html tag with "self closing".
@@ -36,7 +36,6 @@ const getRegExpOfMatchedTags = tag => `<${tag}\\b[^>\/]*>(?:.*?)<\\/${tag}>`
  *
  * Although the above tags might not be valid, we still need to take the above tags in consideration.
  */
-const getRegExpOfMatchedTagsSelfClosing = tag => `<${tag}[^>]+?\\/>`
 
 /**
  * Negtive look ahead on tag and attribute=value. In which case, given div(tag) class='yello':
@@ -106,21 +105,13 @@ function detectHasNoAttrWithValue(context = '', config) {
  */
 function detectTagNumberGreaterThan(context = '', config) {
   const { tag, limit } = config
-  // Compose a regular expression to find the number of matched tags
-
-  // Self-closing matches
-  let reg = getRegExpOfMatchedTagsSelfClosing(tag)
-  const scmatches = context.match(new RegExp(reg, 'g')) || []
-
   // Pattern with a closing tag
-  reg = getRegExpOfMatchedTags(tag)
+  const reg = getRegExpOfMatchedTags(tag)
   const cmatches = context.match(new RegExp(reg, 'g')) || []
 
-  const matchSum = scmatches.length + cmatches.length
-
-  if (matchSum > limit) {
+  if (cmatches.length > limit) {
     return `The html has more than ${limit} <${tag}> tags`
-  } else if (matchSum === limit) {
+  } else if (cmatches.length === limit) {
     return `The html has exactly ${limit} <${tag}> tags`
   } else {
     return `The number of <${tag}> tags in the html is less than the limit ${limit}`

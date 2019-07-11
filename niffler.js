@@ -48,6 +48,8 @@ class Niffler {
       if (!(input instanceof stream.Readable)) {
         throw new Error('Invalid Input source. Input is neither string path nor stream readable.')
       }
+
+      this.input = input
     }
   }
 
@@ -105,10 +107,14 @@ class Niffler {
   write(results) {
     // We should first determine whether the output source is console class
     // or not. join the array of result to a single string
-    const message = results.join('\\n')
+    const message = results.join('\r\n')
     const writer = this.output
 
     return new Promise((resolve, reject) => {
+      if (message.length <= 0) {
+        resolve(message)
+      }
+
       // if this.output is an instanceof Console specified by the user. simply log it
       if (writer instanceof Console) {
         writer.log(message)
@@ -141,16 +147,26 @@ class Niffler {
 
     // Apply html context alone with config to each mode to perform checking logic.
     // Iterate through rules.
+    function createReadStreamFromString (str) {
+      const readable = new stream.Readable()
+      readable._read = () => {}
+      readable.push(str)
+      readable.push(null)
+      return readable
+    }
+
     for (let rule of this.rules) {
       if (rule.mode === rules.ConstrainContext) {
         // Initialize niffler. Set the new context for this new niffler.
+        const cContext = predefinedRules[rules.ConstrainContext](context, rule)
+        const ncReadStream = createReadStreamFromString(cContext)
         const niffler = new Niffler({
-          input: this.input,
+          input: ncReadStream,
           output: this.output,
-          rules,
+          rules: rule.rules || [],
         })
 
-        niffler.detect()
+        await niffler.detect()
       } else {
         if (predefinedRules[rule.mode]) {
           this.result.push(predefinedRules[rule.mode](context, rule))
