@@ -1,5 +1,6 @@
 const path = require('path')
 const fs = require('fs')
+const { Console } = require('console')
 
 const Niffler = require('../niffler')
 
@@ -17,6 +18,24 @@ describe('SEO niffler', () => {
     const niffler = createNiffler([])
     const content = await niffler.read()
     expect(content.length).toBeGreaterThan(1)
+  })
+
+  test('initialize niffler instance with Console as output to terminal', async () => {
+    const customConsole = new Console(process.stdout, process.stderr)
+    const niffler = new Niffler({
+      input: path.resolve(__dirname, './files/index.html'),
+      output: customConsole,
+      rules: [
+        {
+          mode: Niffler.HasNoAttrWithValue,
+          tag: 'img',
+          attribute: 'alt',
+          value: 'hello world',
+        }
+      ],
+    })
+
+    await niffler.detect()
   })
 
   test('output the result to output', async () => {
